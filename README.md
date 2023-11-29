@@ -1,12 +1,14 @@
-# Puject: Hugginface with langchain (image2voicehflc-app)
+# Project: Huggingface with langchain 
 
-This project explains how to use Huggingface locally by using the use case of tunning an image to a story in 3 parts
+## Description
+
+This project explains how to use Huggingface locally by creating a VisionVoice App which turns an image to a story through a 3 part process
 
 Part 1: image to text
 Part 2: Use an LLM model to provide a story
 Part 3: Read the story with voice
 
-It also contains addional tasks execution
+It also contains some addional Hugging Face tasks execution for model testing and discovery purpose
 
 ## Getting Started
 
@@ -22,7 +24,7 @@ Before you begin, ensure you have the following installed:
 - Check Huggingface installation resources [page](https://huggingface.co/docs/transformers/installation)
 
 
-Here is the pip module used
+Here are the pip module used
 
 - [**python-dotenv (1.0.0)**](https://pypi.org/project/python-dotenv/1.0.0/): Reads key-value pairs from a `.env` file and sets them as environment variables.
 - [**transformers (4.35.2)**](https://pypi.org/project/transformers/4.35.2/): Provides state-of-the-art general-purpose architectures for NLP, including BERT, GPT-2, T5, and others.
