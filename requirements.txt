@@ -1,0 +1,7 @@
+python-dotenv==1.0.0
+transformers==4.35.2
+datasets==2.15.0
+langchain==0.0.341
+streamlit==1.28.2
+config==0.5.1
+soundfile==0.12.1
