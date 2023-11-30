@@ -1,4 +1,4 @@
-# Project: Huggingface with langchain 
+# Huggingface Face - with langchain 
 
 ## Description
 
@@ -24,7 +24,7 @@ Before you begin, ensure you have the following installed:
 - Check Huggingface installation resources [page](https://huggingface.co/docs/transformers/installation)
 
 
-Here are the pip module used
+Here are the PIP module used
 
 - [**python-dotenv (1.0.0)**](https://pypi.org/project/python-dotenv/1.0.0/): Reads key-value pairs from a `.env` file and sets them as environment variables.
 - [**transformers (4.35.2)**](https://pypi.org/project/transformers/4.35.2/): Provides state-of-the-art general-purpose architectures for NLP, including BERT, GPT-2, T5, and others.
@@ -70,11 +70,9 @@ or
 python app.py --task 1 
 ```
 
-python app.py -streamlit 
-
-If using streamlit
+Run the the app streamlit
 ```bash
-streamlit run app.py
+streamlit run myApp.py
 ```
 
 

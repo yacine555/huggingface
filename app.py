@@ -3,6 +3,8 @@ import config
 import os
 import json
 import sys,getopt
+import pandas as pd
+import numpy as np
 
 from dotenv import load_dotenv, find_dotenv
 from transformers import pipeline
@@ -24,36 +26,9 @@ load_dotenv(find_dotenv())
 config.openapi_key=os.getenv('OPENAI_API_KEY')
 config.huggingfapi_key=os.getenv('HUGGINGFACEHUB_API_TOCKEN')
 
-
-def runstreamlit():
-
-    #st.set_page_config(layout="wide" , page_title="Img 2 audio story", page_icon = "🚀")
-    st.title("Turn img into audio story")
-    uploaded_file = st.file_uploader("Choose an image file...", type=["png", "jpg", "jpeg"])   
-
-    if uploaded_file is not None:
-        print(uploaded_file)
-        bytes_data = uploaded_file.getvalue()
-        with open(uploaded_file.name, "wb") as f:
-            f.write(bytes_data)
-
-        st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
-
-        scenario = Task.img2text(uploaded_file.name)
-        story = Task.generateStory(scenario)
-        Task.story2voiceM1(story)
-
-        with st.expander("Scenario"):
-            st.write(scenario)
-        with st.expander("Story"):
-            st.write(story)
-        st.audio("story.flac")
-
-
 def main(argv):
     print ('Run main ')
     taskNum = ''
-    streamlit = 'NO'
     opts, args = getopt.getopt(argv,"ht:",["task="])
     print ('opts ', opts)
 
@@ -105,12 +80,9 @@ def main(argv):
                     case _:
                         print ('Run default task ', taskNum)
                         subprocess.run(["ls", "-l"]) 
-    else:
-        runstreamlit()
     
 
     print ('task is ', taskNum)
-    print ('Streamlit  is ', streamlit)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

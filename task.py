@@ -34,7 +34,7 @@ class Task:
         return text
     
     @staticmethod
-    def generateStory(scenario):
+    def generateStory(scenario, modelname="gpt-3.5-turbo",temp=1):
 
         """
         Huggingface task to generate a story based on a text scenario
@@ -68,7 +68,7 @@ class Task:
 
 
         story_llm = LLMChain(
-            llm = ChatOpenAI( model_name="gpt-3.5-turbo", temperature=1),
+            llm = ChatOpenAI( model_name=modelname, temperature=temp),
             prompt = chat_prompt,
             verbose = True)
 
