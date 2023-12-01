@@ -17,6 +17,12 @@ from langchain.prompts.chat import ChatPromptTemplate
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 
+
+from diffusers import StableVideoDiffusionPipeline
+from diffusers import AutoPipelineForText2Image
+from diffusers import AutoPipelineForImage2Image
+from diffusers.utils import load_image, export_to_video
+
 class Task:
 
     @staticmethod
@@ -207,10 +213,6 @@ class Task:
 
 
 
-    """
-    Summarize text
-    Methode using Huggingface model ... TODO
-    """
     @staticmethod
     def summarize(text):
         """
@@ -222,3 +224,59 @@ class Task:
         summarizerTask = pipeline("summarization", model="facebook/bart-large-cnn")
         res = summarizerTask(text,max_length=150,min_length=100, do_sample=False)
         return res
+
+
+    @staticmethod
+    def img2video():
+        """
+        Huggingface task to convert an image to video using stability AI model
+        """
+        pipe = StableVideoDiffusionPipeline.from_pretrained(
+            "stabilityai/stable-video-diffusion-img2vid-xt", 
+            torch_dtype=torch.float32, 
+            variant="fp16"
+        )
+    
+        #pipe.enable_model_cpu_offload()
+
+        image = load_image("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusers/svd/rocket.png?download=true")
+        image = image.resize((512,288))
+
+        generator = torch.manual_seed(42)
+        frames = pipe(image, decode_chunk_size=1, generator=generator).frames[0]
+
+        export_to_video(frames, "generated.mp4", fps=7)
+
+    @staticmethod
+    def ktext2img(prompt_text):
+        """
+        Huggingface diffuser. Kandinsky 3.0 convert text to imgage task using K-diffusion model
+        """
+
+        pipe = AutoPipelineForText2Image.from_pretrained("kandinsky-community/kandinsky-3", variant="fp16", torch_dtype=torch.float32)
+        #pipe.enable_model_cpu_offload()
+                
+        prompt = "A photograph of the inside of a subway train. There are raccoons sitting on the seats. One of them is reading a newspaper. The window shows the city in the background."
+
+        generator = torch.Generator(device="cpu").manual_seed(0)
+        image = pipe(prompt, num_inference_steps=25, generator=generator).images[0]
+
+        return image
+
+
+    @staticmethod
+    def kimg2img(prompt_text):
+        """
+        Huggingface diffuser. Kandinsky 3.0 convert image to imgage task using K-diffusion model
+        """
+
+        pipe = AutoPipelineForImage2Image.from_pretrained("kandinsky-community/kandinsky-3", variant="fp16", torch_dtype=torch.float32)
+        #pipe.enable_model_cpu_offload()
+                
+        prompt = "A painting of the inside of a subway train with tiny raccoons."
+        image = load_image("https://huggingface.co/datasets/hf-internal-testing/diffusers-images/resolve/main/kandinsky3/t2i.png")
+
+        generator = torch.Generator(device="cpu").manual_seed(0)
+        image = pipe(prompt, image=image, strength=0.75, num_inference_steps=25, generator=generator).images[0]
+
+        return image

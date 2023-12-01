@@ -17,13 +17,13 @@ load_dotenv(find_dotenv())
 config.openapi_key=os.getenv('OPENAI_API_KEY')
 config.huggingfapi_key=os.getenv('HUGGINGFACEHUB_API_TOCKEN')
 
-st.markdown("# Main")
+st.markdown("# APP DEMO")
 st.sidebar.markdown("# Main")
 
 def runstreamlit():
 
     #st.set_page_config(layout="wide" , page_title="Img 2 audio story", page_icon = "🚀")
-    st.title("Turn imgage into audio story")
+    st.title("Turn image into audio story")
 
     # Add a selectbox to the sidebar:
     llm_selectbox = st.sidebar.selectbox(
@@ -44,15 +44,18 @@ def runstreamlit():
 
         st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
 
-        scenario = Task.img2text(uploaded_file.name)
-        story = Task.generateStory(scenario,modelname=llm_selectbox,temp=temp_slider)
-        Task.story2voiceM1(story)
+        
 
-        with st.expander("Scenario"):
-            st.write(scenario)
-        with st.expander("Story"):
-            st.write(story)
-        st.audio("story.flac")
+        with st.spinner('Generating text...'):
+            scenario = Task.img2text(uploaded_file.name)
+            story = Task.generateStory(scenario,modelname=llm_selectbox,temp=temp_slider)
+            Task.story2voiceM1(story)
+            with st.expander("Scenario"):
+                st.write(scenario)
+            with st.expander("Story"):
+                st.write(story)
+            st.audio("story.flac")
+            st.success('Done!')
 
 
 def main(argv):
