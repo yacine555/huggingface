@@ -53,7 +53,7 @@ with tab2:
             Task.story2voiceM1(txt2)
 
         st.success('Done!')
-        st.audio("story.flac")
+        st.audio("./output/story.flac")
 
 
 with tab3:

@@ -109,8 +109,13 @@ class Task:
         print(response.status_code)
         print(response.reason)
 
+        folder_path = "output/"
+        isExist = os.path.exists(folder_path)
+        if not isExist:
+            os.makedirs(folder_path)
+
         print("Generate audio file")
-        with open("story.flac", "wb") as f:
+        with open(folder_path + "story.flac", "wb") as f:
             f.write(response.content)
 
 
@@ -129,7 +134,13 @@ class Task:
 
         res= taskPipe(story)
         print("Generate audio file: " + res)
-        with open("story.flac", "wb") as f:
+        
+        folder_path = "output/"
+        isExist = os.path.exists(folder_path)
+        if not isExist:
+            os.makedirs(folder_path)
+
+        with open(folder_path + "story.flac", "wb") as f:
             f.write(res.content)
 
         return 
@@ -153,7 +164,12 @@ class Task:
 
         speech = synthesiser(story, forward_params={"speaker_embeddings": speaker_embedding})
 
-        sf.write("output/story.wav", speech["audio"], samplerate=speech["sampling_rate"])
+        folder_path = "output/"
+        isExist = os.path.exists(folder_path)
+        if not isExist:
+            os.makedirs(folder_path)
+
+        sf.write(folder_path + "story.wav", speech["audio"], samplerate=speech["sampling_rate"])
 
         return 
     

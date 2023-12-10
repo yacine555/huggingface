@@ -54,7 +54,9 @@ def runstreamlit():
                 st.write(scenario)
             with st.expander("Story"):
                 st.write(story)
-            st.audio("story.flac")
+
+            st.audio("./output/story.flac")
+    
             st.success('Done!')
 
 
