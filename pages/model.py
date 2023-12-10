@@ -106,8 +106,9 @@ with tab5:
 
 
     if st.button('Generate Video'):
-        'We have that animal!'
-        #Task.img2video()
+        'Start Video creation...'
+        Task.img2video()
+        st.success('Done!')
     
 with tab6:
     st.header("Kandinsky 3.0 text2img")

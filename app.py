@@ -27,10 +27,9 @@ config.openapi_key=os.getenv('OPENAI_API_KEY')
 config.huggingfapi_key=os.getenv('HUGGINGFACEHUB_API_TOCKEN')
 
 def main(argv):
-    print ('Run main ')
     taskNum = ''
     opts, args = getopt.getopt(argv,"ht:",["task="])
-    print ('opts ', opts)
+    print ('Main function Args opts:  ', opts)
 
     if len(sys.argv) > 1:
         for opt, arg in opts:
@@ -39,27 +38,24 @@ def main(argv):
                 sys.exit()
             elif opt in ("-t", "--task"):
                 taskNum = arg
+                print ('Run task ', taskNum)
                 match taskNum:
                     case "1":
-                        print ('Run task ', taskNum)
                         scenario = Task.img2text("photo1.png")
                         print("Task 1 - img2text:" +  scenario + "  \n\n")
                     case "2":
-                        print ('Run task ', taskNum)
                         scenario = Task.img2text("photo1.png")
                         print("Task 1 - img2text:" +  scenario + "  \n\n")
                         story = Task.generateStory(scenario)
                         print("Task 2 - generateStory:" +  story + "  \n\n")
                     
                     case "3":
-                        print ('Run task ', taskNum)
                         # scenario = Task.img2text("photo1.png")
                         # story = Task.generateStory(scenario)
                         # Task.story2voiceM1(story)
                         #Task.story2voiceM2("Helo World")
                         Task.story2voiceM3("Helo World")
                     case "4":
-                        print ('Run task ', taskNum)
                         sentiment=Task.sentimentAnalysis("dear tmobile your service is straight crap in dallas..")
                         print("Task Sentiment - sentimentAnalysis:  \n\n")
                         print(sentiment)
@@ -67,7 +63,6 @@ def main(argv):
                         print("Task Sentiment - sentimentAnalysis Test token:  \n\n")
                         sentiment=Task.sentimentAnalysisTokenizerTest("dear tmobile your service is straight crap in dallas..")
                     case "6":
-                        print ('Run task ', taskNum)
                         print("Task - Summarization \n\n")
                         text = """
                         Humane has been teasing its first device, the AI Pin, for most of this year. It's scheduled to launch the Pin on Thursday, but The Verge has obtained documents detailing practically everything about the device ahead of its official launch. What they show is that Humane, the company noisily promoting a world after smartphones, is about to launch what amounts to a $699 wearable smartphone without a screen that has a $24-a-month subscription fee and runs on a Humane-branded version of T-Mobile's network with access to AI models from Microsoft and OpenAI.
@@ -81,8 +76,6 @@ def main(argv):
                         print ('Run default task ', taskNum)
                         subprocess.run(["ls", "-l"]) 
     
-
-    print ('task is ', taskNum)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

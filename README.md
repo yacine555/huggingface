@@ -29,20 +29,32 @@ Here are the PIP module used
 - [**python-dotenv (1.0.0)**](https://pypi.org/project/python-dotenv/1.0.0/): Reads key-value pairs from a `.env` file and sets them as environment variables.
 - [**transformers (4.35.2)**](https://pypi.org/project/transformers/4.35.2/): Provides state-of-the-art general-purpose architectures for NLP, including BERT, GPT-2, T5, and others.
 - [**datasets (2.15.0)**](https://pypi.org/project/datasets/2.15.0/): Offers a large collection of ready-to-use datasets for NLP model training and evaluation.
-- [**langchain (0.0.341)**](https://pypi.org/project/langchain/0.0.341/): Designed for building applications involving language models.
-- [**streamlit (1.28.2)**](https://pypi.org/project/streamlit/1.28.2/): An app framework for Machine Learning and Data Science to create apps quickly.
+- [**langchain (0.0.348)**](https://pypi.org/project/langchain/0.0.348/): Designed for building applications involving language models.
+- [**streamlit (1.29.0)**](https://pypi.org/project/streamlit/1.29.0/): An app framework for Machine Learning and Data Science to create apps quickly.
 - [**config (0.5.1)**](https://pypi.org/project/config/0.5.1/): Handles configuration files in Python.
 - [**soundfile (0.12.1)**](https://pypi.org/project/SoundFile/0.12.1/): Reads from and writes to various sound file formats, often used with NumPy.
 
 
+
 ### Installation
+
+
+Recommend using Install pipenv or other vitual environment tool. 
+
+```bash
+pipenv install
+pipenv shell
+pipenv --version
+python --version
+```
+
 
 Clone the repository and install the required packages:
 
 ```bash
-git clone https://github.com/your-username/image2voicehflc-app.git
+git clone https://github.com/yacine555/huggingface.git
 cd image2voicehflc-app
-pip install -r requirements.txt
+pipenv install -r requirements.txt
 ```
 
 
@@ -62,12 +74,12 @@ export LANGCHAIN_API_KEY='your_langchain_api_key'
 Start the application by running:
 
 ```bash
-python app.py -t 1 
+pipenv run python app.py -t 1 
 ```
 or
 
 ```bash
-python app.py --task 1 
+pipenv run python app.py --task 1 
 ```
 
 Run the the app streamlit

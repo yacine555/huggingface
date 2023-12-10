@@ -153,7 +153,7 @@ class Task:
 
         speech = synthesiser(story, forward_params={"speaker_embeddings": speaker_embedding})
 
-        sf.write("story.wav", speech["audio"], samplerate=speech["sampling_rate"])
+        sf.write("output/story.wav", speech["audio"], samplerate=speech["sampling_rate"])
 
         return 
     
