@@ -2,7 +2,7 @@ import requests
 import config
 import os
 import json
-import sys,getopt
+import sys, getopt
 import pandas as pd
 import numpy as np
 
@@ -23,45 +23,50 @@ import subprocess
 load_dotenv(find_dotenv())
 
 
-config.openapi_key=os.getenv('OPENAI_API_KEY')
-config.huggingfapi_key=os.getenv('HUGGINGFACEHUB_API_TOCKEN')
+config.openapi_key = os.getenv("OPENAI_API_KEY")
+config.huggingfapi_key = os.getenv("HUGGINGFACEHUB_API_TOCKEN")
+
 
 def main(argv):
-    taskNum = ''
-    opts, args = getopt.getopt(argv,"ht:",["task="])
-    print ('Main function Args opts:  ', opts)
+    taskNum = ""
+    opts, args = getopt.getopt(argv, "ht:", ["task="])
+    print("Main function Args opts:  ", opts)
 
     if len(sys.argv) > 1:
         for opt, arg in opts:
-            if opt == '-h':
-                print ('test.py -t <tasknumber>')
+            if opt == "-h":
+                print("test.py -t <tasknumber>")
                 sys.exit()
             elif opt in ("-t", "--task"):
                 taskNum = arg
-                print ('Run task ', taskNum)
+                print("Run task ", taskNum)
                 match taskNum:
                     case "1":
                         scenario = Task.img2text("photo1.png")
-                        print("Task 1 - img2text:" +  scenario + "  \n\n")
+                        print("Task 1 - img2text:" + scenario + "  \n\n")
                     case "2":
                         scenario = Task.img2text("photo1.png")
-                        print("Task 1 - img2text:" +  scenario + "  \n\n")
+                        print("Task 1 - img2text:" + scenario + "  \n\n")
                         story = Task.generateStory(scenario)
-                        print("Task 2 - generateStory:" +  story + "  \n\n")
-                    
+                        print("Task 2 - generateStory:" + story + "  \n\n")
+
                     case "3":
                         # scenario = Task.img2text("photo1.png")
                         # story = Task.generateStory(scenario)
                         # Task.story2voiceM1(story)
-                        #Task.story2voiceM2("Helo World")
+                        # Task.story2voiceM2("Helo World")
                         Task.story2voiceM3("Helo World")
                     case "4":
-                        sentiment=Task.sentimentAnalysis("dear tmobile your service is straight crap in dallas..")
+                        sentiment = Task.sentimentAnalysis(
+                            "dear Z-mobile your service is not great in dallas..."
+                        )
                         print("Task Sentiment - sentimentAnalysis:  \n\n")
                         print(sentiment)
                     case "5":
                         print("Task Sentiment - sentimentAnalysis Test token:  \n\n")
-                        sentiment=Task.sentimentAnalysisTokenizerTest("dear tmobile your service is straight crap in dallas..")
+                        sentiment = Task.sentimentAnalysisTokenizerTest(
+                            "dear Z-mobile your service is not great in dallas.."
+                        )
                     case "6":
                         print("Task - Summarization \n\n")
                         text = """
@@ -73,13 +78,9 @@ def main(argv):
                         print(res)
 
                     case _:
-                        print ('Run default task ', taskNum)
-                        subprocess.run(["ls", "-l"]) 
-    
+                        print("Run default task ", taskNum)
+                        subprocess.run(["ls", "-l"])
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
-
-
-

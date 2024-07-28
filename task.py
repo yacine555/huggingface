@@ -1,7 +1,7 @@
 import requests
 import os
 import json
-import sys,getopt
+import sys, getopt
 import config
 import torch
 
@@ -23,8 +23,8 @@ from diffusers import AutoPipelineForText2Image
 from diffusers import AutoPipelineForImage2Image
 from diffusers.utils import load_image, export_to_video
 
-class Task:
 
+class Task:
     @staticmethod
     def img2text(imageUrl):
         """
@@ -35,13 +35,14 @@ class Task:
         """
 
         # Use a pipeline as a high-level helper
-        image_to_textPipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
-        text = image_to_textPipe(imageUrl)[0]['generated_text']
+        image_to_textPipe = pipeline(
+            "image-to-text", model="Salesforce/blip-image-captioning-large"
+        )
+        text = image_to_textPipe(imageUrl)[0]["generated_text"]
         return text
-    
-    @staticmethod
-    def generateStory(scenario, modelname="gpt-3.5-turbo",temp=1):
 
+    @staticmethod
+    def generateStory(scenario, modelname="gpt-3.5-turbo", temp=1):
         """
         Huggingface task to generate a story based on a text scenario
         Use Longchain prompt template with OpenAI LLM
@@ -59,34 +60,34 @@ class Task:
         STORY:
         """
 
-
         prompt = PromptTemplate(
             input_variables=["scenario"],
             template=promptTempalte,
-        )   
+        )
 
         human_template = "{scenario}"
 
-        chat_prompt = ChatPromptTemplate.from_messages([
-            ("system", promptTempalte),
-            ("human", human_template),
-        ])
-
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", promptTempalte),
+                ("human", human_template),
+            ]
+        )
 
         story_llm = LLMChain(
-            llm = ChatOpenAI( model_name=modelname, temperature=temp),
-            prompt = chat_prompt,
-            verbose = True)
+            llm=ChatOpenAI(model_name=modelname, temperature=temp),
+            prompt=chat_prompt,
+            verbose=True,
+        )
 
         story = story_llm.predict(scenario=scenario)
 
         return story
 
-
     @staticmethod
     def story2voiceM1(story):
         """
-        Huggingface task to generate voice based on a story. 
+        Huggingface task to generate voice based on a story.
         Methode1 Using HF inference API model
 
         :param story: text to be converted to audio (string)
@@ -105,7 +106,7 @@ class Task:
 
         response = requests.post(API_URL, headers=headers, json=payload)
 
-        #if response.status_code == 200:
+        # if response.status_code == 200:
         print(response.status_code)
         print(response.reason)
 
@@ -118,12 +119,10 @@ class Task:
         with open(folder_path + "story.flac", "wb") as f:
             f.write(response.content)
 
-
-
     @staticmethod
     def story2voiceM2(story):
         """
-        Huggingface task to generate voice based on a story. 
+        Huggingface task to generate voice based on a story.
         Methode 2 Using downloaded model
 
         :param story: text to be converted to audio (string)
@@ -132,9 +131,9 @@ class Task:
         # Use a pipeline as a high-level helper
         taskPipe = pipeline("text-to-speech", model="espnet/kan-bayashi_ljspeech_vits")
 
-        res= taskPipe(story)
+        res = taskPipe(story)
         print("Generate audio file: " + res)
-        
+
         folder_path = "output/"
         isExist = os.path.exists(folder_path)
         if not isExist:
@@ -143,8 +142,7 @@ class Task:
         with open(folder_path + "story.flac", "wb") as f:
             f.write(res.content)
 
-        return 
-    
+        return
 
     @staticmethod
     def story2voiceM3(story):
@@ -158,21 +156,30 @@ class Task:
         # Use a pipeline as a high-level helper
         synthesiser = pipeline("text-to-speech", "microsoft/speecht5_tts")
 
-        embeddings_dataset = load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
-        speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(0)
+        embeddings_dataset = load_dataset(
+            "Matthijs/cmu-arctic-xvectors", split="validation"
+        )
+        speaker_embedding = torch.tensor(embeddings_dataset[7306]["xvector"]).unsqueeze(
+            0
+        )
         # You can replace this embedding with your own as well.
 
-        speech = synthesiser(story, forward_params={"speaker_embeddings": speaker_embedding})
+        speech = synthesiser(
+            story, forward_params={"speaker_embeddings": speaker_embedding}
+        )
 
         folder_path = "output/"
         isExist = os.path.exists(folder_path)
         if not isExist:
             os.makedirs(folder_path)
 
-        sf.write(folder_path + "story.wav", speech["audio"], samplerate=speech["sampling_rate"])
+        sf.write(
+            folder_path + "story.wav",
+            speech["audio"],
+            samplerate=speech["sampling_rate"],
+        )
 
-        return 
-    
+        return
 
     @staticmethod
     def sentimentAnalysis(text):
@@ -182,7 +189,10 @@ class Task:
         :param story: text to be converted to audio (string)
         :return: [{'label': 'NEGATIVE|NEUTRAL|POSITIVE', 'score': 0 to 1}] (json object )
         """
-        classifier = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+        classifier = pipeline(
+            "sentiment-analysis",
+            model="distilbert-base-uncased-finetuned-sst-2-english",
+        )
         res = classifier(text)
         return res
 
@@ -201,7 +211,6 @@ class Task:
         classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
         res = classifier(text)
         return res
-    
 
     @staticmethod
     def sentimentAnalysisTokenizerTest(text):
@@ -214,7 +223,7 @@ class Task:
         model_name = "distilbert-base-uncased-finetuned-sst-2-english"
         model = AutoModelForSequenceClassification.from_pretrained(model_name)
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-    
+
         res = tokenizer(text)
         print(res)
 
@@ -227,20 +236,17 @@ class Task:
         decoded_string = tokenizer.decode(ids)
         print(decoded_string)
 
-
-
     @staticmethod
     def summarize(text):
         """
-        Huggingface task to summarize text 
+        Huggingface task to summarize text
 
         :param text: text to be summarize (string)
         :return: (string)
         """
         summarizerTask = pipeline("summarization", model="facebook/bart-large-cnn")
-        res = summarizerTask(text,max_length=150,min_length=100, do_sample=False)
+        res = summarizerTask(text, max_length=150, min_length=100, do_sample=False)
         return res
-
 
     @staticmethod
     def img2video():
@@ -248,15 +254,17 @@ class Task:
         Huggingface task to convert an image to video using stability AI model
         """
         pipe = StableVideoDiffusionPipeline.from_pretrained(
-            "stabilityai/stable-video-diffusion-img2vid-xt", 
-            torch_dtype=torch.float32, 
-            variant="fp16"
+            "stabilityai/stable-video-diffusion-img2vid-xt",
+            torch_dtype=torch.float32,
+            variant="fp16",
         )
-    
-        #pipe.enable_model_cpu_offload()
 
-        image = load_image("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusers/svd/rocket.png?download=true")
-        image = image.resize((512,288))
+        # pipe.enable_model_cpu_offload()
+
+        image = load_image(
+            "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusers/svd/rocket.png?download=true"
+        )
+        image = image.resize((512, 288))
 
         generator = torch.manual_seed(42)
         frames = pipe(image, decode_chunk_size=1, generator=generator).frames[0]
@@ -269,9 +277,11 @@ class Task:
         Huggingface diffuser. Kandinsky 3.0 convert text to imgage task using K-diffusion model
         """
 
-        pipe = AutoPipelineForText2Image.from_pretrained("kandinsky-community/kandinsky-3", variant="fp16", torch_dtype=torch.float32)
-        #pipe.enable_model_cpu_offload()
-                
+        pipe = AutoPipelineForText2Image.from_pretrained(
+            "kandinsky-community/kandinsky-3", variant="fp16", torch_dtype=torch.float32
+        )
+        # pipe.enable_model_cpu_offload()
+
         prompt = "A photograph of the inside of a subway train. There are raccoons sitting on the seats. One of them is reading a newspaper. The window shows the city in the background."
 
         generator = torch.Generator(device="cpu").manual_seed(0)
@@ -279,20 +289,128 @@ class Task:
 
         return image
 
-
     @staticmethod
     def kimg2img(prompt_text):
         """
         Huggingface diffuser. Kandinsky 3.0 convert image to imgage task using K-diffusion model
         """
 
-        pipe = AutoPipelineForImage2Image.from_pretrained("kandinsky-community/kandinsky-3", variant="fp16", torch_dtype=torch.float32)
-        #pipe.enable_model_cpu_offload()
-                
+        pipe = AutoPipelineForImage2Image.from_pretrained(
+            "kandinsky-community/kandinsky-3", variant="fp16", torch_dtype=torch.float32
+        )
+        # pipe.enable_model_cpu_offload()
+
         prompt = "A painting of the inside of a subway train with tiny raccoons."
-        image = load_image("https://huggingface.co/datasets/hf-internal-testing/diffusers-images/resolve/main/kandinsky3/t2i.png")
+        image = load_image(
+            "https://huggingface.co/datasets/hf-internal-testing/diffusers-images/resolve/main/kandinsky3/t2i.png"
+        )
 
         generator = torch.Generator(device="cpu").manual_seed(0)
-        image = pipe(prompt, image=image, strength=0.75, num_inference_steps=25, generator=generator).images[0]
+        image = pipe(
+            prompt,
+            image=image,
+            strength=0.75,
+            num_inference_steps=25,
+            generator=generator,
+        ).images[0]
 
         return image
+    
+
+    @staticmethod
+    def generatePRD(industry, company, description, strategy, persona, problem, modelname="gpt-3.5-turbo", temp=1):
+        """
+        Huggingface task to generate a PRD based on some company input
+        Use Longchain prompt template with OpenAI LLM
+
+        :param scenario: text scenario to generate story (string)
+        :return: text story (string)
+        """
+        print("Exemple PRD -  Call LLM with a Lonchain prompt tempate: \n")
+
+        aiPromptTempalte  = """
+        You are an expert product manager for a {industry} and your role is to write Product Requirements Documents;
+        You work for {company}, it is a company that {description};
+        The company strategy is to serve the commercial and sales organization of drug manufacturers {strategy};
+        """
+
+        human_template = """
+        Propose a product requirement document  for the user persona {persona};
+        The problem the app solves is that {problem};
+        
+        Propose a PRD using this document template:
+        
+        CONTENT: The contents of a PRD
+            Title: Give this project a distinct name and a code name.
+            Change History: Describe each important change to the PRD, including who changed it, when they changed it, and what they changed.
+            Overview: Briefly, what is this project about?  Why are you doing it?
+            Success Metrics: What are the success metrics that indicate you're achieving your internal goals for the project?
+            Messaging: What's the product messaging marketing will use to describe this product to customers, both new and existing?
+            Timeline/Release Planning: What's the overall schedule you're working towards?
+            Personas: Who are the target personas for this product, and which is the key persona? For each persona, explain the benefits.
+            Persona objectives: These are full stories about how various personas will use the product in context.
+            User Stories/Features/Requirements: These are the distinct, prioritized features along with a short explanation as to why this feature is important. Add at least six user stories. Use the framework template: As a 'user persona', I want to 'action', so that I can get 'benefits'. Rank them.
+            Not in Scope: list some ideas that you do not usually develop as a version 1 and why. 
+            Designs: Include any needed early sketches, and throughout the project, link to the actual designs once they're available.
+            Open Issues: List at least 3 key factors you still need to figure out?
+            Other Considerations: This is a catch-all for anything else, such as if you make a key decision to remove or add to the project's scope.
+        """
+
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", aiPromptTempalte),
+                ("human", human_template),
+            ]
+        )
+
+        llm = LLMChain(
+            llm=ChatOpenAI(model_name=modelname, temperature=temp),
+            prompt=chat_prompt,
+            verbose=True,
+        )
+
+        prd = llm.predict(industry=industry,company=company,description=description, strategy=strategy, persona=persona,problem=problem)
+
+        return prd
+
+
+
+    @staticmethod
+    def refinePRD(prdDocument, instruction, industry, company, description, strategy, persona, problem, modelname="gpt-3.5-turbo", temp=1):
+        """
+        Huggingface task to refine a PRD based on some company input
+        Use Longchain prompt template with OpenAI LLM
+
+        :param prdDocument: previsously generated socument (string)
+        :return: refined PRD (string)
+        """
+        print("Refine PRD -  Call LLM with a Lonchain prompt tempate: \n")
+
+        aiPromptTempalte  = """
+        You are an expert product manager for a {industry} and your role is to write Product Requirements Documents;
+        You work for {company}, it is a company that {description};
+        The company strategy is to serve the commercial and sales organization of drug manufacturers {strategy};
+        """
+
+        human_template = """
+        Update the PRD Document provided below by folowing this instruction: {instruction};
+        
+        PRD Document: {prdDocument} 
+        """
+
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", aiPromptTempalte),
+                ("human", human_template),
+            ]
+        )
+
+        llm = LLMChain(
+            llm=ChatOpenAI(model_name=modelname, temperature=temp),
+            prompt=chat_prompt,
+            verbose=True,
+        )
+
+        prd = llm.predict(prdDocument=prdDocument, instruction=instruction, industry=industry, company=company, description=description, strategy=strategy, persona=persona,problem=problem)
+
+        return prd

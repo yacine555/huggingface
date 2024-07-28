@@ -21,7 +21,7 @@ Before you begin, ensure you have the following installed:
 - [Pytorch deeplearning library](https://pytorch.org/get-started/locally/)
 - [Langchain 0.0.331](https://python.langchain.com/docs/get_started/introduction)
 - [Streamlit](https://streamlit.io/) 
-- Check Huggingface installation resources [page](https://huggingface.co/docs/transformers/installation)
+- Review Huggingface installation [resources page](https://huggingface.co/docs/transformers/installation)
 
 
 Here are the PIP module used
@@ -58,6 +58,12 @@ pipenv install -r requirements.txt
 ```
 
 
+To upgrade a package
+```
+pip install <package_name> --upgrade
+pip install transformers --upgrade
+```
+
 
 ### Setting Up
 
@@ -73,6 +79,7 @@ export LANGCHAIN_API_KEY='your_langchain_api_key'
 
 Start the application by running:
 
+Run of the task 1 (img2text)
 ```bash
 pipenv run python app.py -t 1 
 ```
@@ -85,6 +92,7 @@ pipenv run python app.py --task 1
 Run the the app streamlit
 ```bash
 streamlit run myApp.py
+streamlit run myAppBRD.py
 ```
 
 

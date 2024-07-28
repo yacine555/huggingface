@@ -2,7 +2,7 @@ import requests
 import config
 import os
 import json
-import sys,getopt
+import sys, getopt
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv, find_dotenv
@@ -14,27 +14,30 @@ import subprocess
 
 
 load_dotenv(find_dotenv())
-config.openapi_key=os.getenv('OPENAI_API_KEY')
-config.huggingfapi_key=os.getenv('HUGGINGFACEHUB_API_TOCKEN')
+config.openapi_key = os.getenv("OPENAI_API_KEY")
+config.huggingfapi_key = os.getenv("HUGGINGFACEHUB_API_TOCKEN")
 
 st.markdown("# APP DEMO")
 st.sidebar.markdown("# Main")
 
-def runstreamlit():
 
-    #st.set_page_config(layout="wide" , page_title="Img 2 audio story", page_icon = "🚀")
+def runstreamlit():
+    # st.set_page_config(layout="wide" , page_title="Img 2 audio story", page_icon = "🚀")
     st.title("Turn image into audio story")
 
     # Add a selectbox to the sidebar:
     llm_selectbox = st.sidebar.selectbox(
-        'Select the OpenAI LLM model:',
-        ('gpt-3.5-turbo', 'gpt-4-1106-preview', 'gpt-3.5-turbo-1106')
+        "Select the OpenAI LLM model:",
+        ("gpt-3.5-turbo", "gpt-4-1106-preview", "gpt-3.5-turbo-1106"),
     )
 
+    temp_slider = st.sidebar.slider(
+        label="Temperature", min_value=0.0, max_value=1.0, value=1.0, step=0.1
+    )
 
-    temp_slider= st.sidebar.slider(label="Temperature", min_value=0.0, max_value=1.0, value=1.0, step=0.1)
-
-    uploaded_file = st.file_uploader("Choose an image file...", type=["png", "jpg", "jpeg"])   
+    uploaded_file = st.file_uploader(
+        "Choose an image file...", type=["png", "jpg", "jpeg"]
+    )
 
     if uploaded_file is not None:
         print(uploaded_file)
@@ -42,13 +45,13 @@ def runstreamlit():
         with open(uploaded_file.name, "wb") as f:
             f.write(bytes_data)
 
-        st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
+        st.image(uploaded_file, caption="Uploaded Image.", use_column_width=True)
 
-        
-
-        with st.spinner('Generating text...'):
+        with st.spinner("Generating text..."):
             scenario = Task.img2text(uploaded_file.name)
-            story = Task.generateStory(scenario,modelname=llm_selectbox,temp=temp_slider)
+            story = Task.generateStory(
+                scenario, modelname=llm_selectbox, temp=temp_slider
+            )
             Task.story2voiceM1(story)
             with st.expander("Scenario"):
                 st.write(scenario)
@@ -56,19 +59,18 @@ def runstreamlit():
                 st.write(story)
 
             st.audio("./output/story.flac")
-    
-            st.success('Done!')
+
+            st.success("Done!")
 
 
 def main(argv):
-    print ('Run main ')
-    taskNum = ''
-    streamlit = 'NO'
-    opts, args = getopt.getopt(argv,"ht:",["task="])
-    print ('opts ', opts)
+    print("Run main ")
+    taskNum = ""
+    streamlit = "NO"
+    opts, args = getopt.getopt(argv, "ht:", ["task="])
+    print("opts ", opts)
 
     runstreamlit()
-
 
 
 if __name__ == "__main__":
